@@ -1,0 +1,295 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title style="text-transform: capitalize">{{ pokemon?.nombre }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (pokemon) {
+    <div class="pagina">
+      <h1 class="titulo">
+        <span class="nombre">{{ pokemon.nombre }}</span>
+        <span class="num">N.º {{ ('0000' + pokemon.id).slice(-4) }}</span>
+      </h1>
+
+      <p class="descripcion">{{ pokemon.descripcion }}</p>
+
+      <div class="cuerpo">
+        <div class="col-izq">
+          <div class="foto">
+            <img [src]="pokemon.imagen" [alt]="pokemon.nombre" />
+          </div>
+
+          <div class="sprites">
+            <div class="sprite">
+              <img [src]="pokemon.spriteNormal" alt="normal" />
+              <span>Normal</span>
+            </div>
+            <div class="sprite">
+              <img [src]="pokemon.spriteShiny" alt="shiny" />
+              <span>Shiny</span>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stats-titulo">Puntos de base (total: {{ pokemon.totalStats }})</div>
+            <div class="barras">
+              @for (s of pokemon.stats; track s.nombre) {
+                <div class="barra-col">
+                  <span class="barra-valor">{{ s.valor }}</span>
+                  <div class="barra-fondo">
+                    <div class="barra-relleno" [style.height.%]="s.porcentaje"></div>
+                  </div>
+                  <span class="barra-nombre">{{ s.nombre }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="col-der">
+          <div class="caja-azul">
+            <div class="dato">
+              <span class="etiqueta">Altura</span>
+              <span class="valor">{{ pokemon.altura }} m</span>
+            </div>
+            <div class="dato">
+              <span class="etiqueta">Peso</span>
+              <span class="valor">{{ pokemon.peso }} kg</span>
+            </div>
+            <div class="dato">
+              <span class="etiqueta">Categoría</span>
+              <span class="valor">{{ pokemon.categoria }}</span>
+            </div>
+            <div class="dato">
+              <span class="etiqueta">Hábitat</span>
+              <span class="valor hab">{{ pokemon.habitat }}</span>
+            </div>
+            <div class="dato">
+              <span class="etiqueta">Generación</span>
+              <span class="valor">{{ pokemon.generacion }}</span>
+            </div>
+            <div class="dato">
+              <span class="etiqueta">Género</span>
+              <span class="valor">{{ pokemon.genero }}</span>
+            </div>
+            <div class="dato">
+              <span class="etiqueta">Experiencia base</span>
+              <span class="valor">{{ pokemon.experiencia }}</span>
+            </div>
+            <div class="dato">
+              <span class="etiqueta">Ratio de captura</span>
+              <span class="valor">{{ pokemon.captura }}</span>
+            </div>
+            <div class="dato">
+              <span class="etiqueta">Felicidad base</span>
+              <span class="valor">{{ pokemon.felicidad }}</span>
+            </div>
+            <div class="dato">
+              <span class="etiqueta">Grupos huevo</span>
+              @for (g of pokemon.gruposHuevo; track g) {
+                <span class="valor hab">{{ g }}</span>
+              }
+            </div>
+            <div class="dato">
+              <span class="etiqueta">Habilidades</span>
+              @for (h of pokemon.habilidades; track h) {
+                <span class="valor hab">{{ h }}</span>
+              }
+            </div>
+          </div>
+
+          <h3 class="subtitulo">Tipo</h3>
+          <div class="tipos">
+            @for (t of pokemon.tipos; track t) {
+              <span [class]="'tipo tipo-' + t">{{ t }}</span>
+            }
+          </div>
+
+          <h3 class="subtitulo">Debilidades</h3>
+          <div class="tipos">
+            @for (d of pokemon.debilidades; track d.tipo) {
+              <span [class]="'tipo tipo-' + d.tipo">{{ d.tipo }} x{{ d.veces }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      @if (pokemon.evoluciones.length > 1) {
+        <div class="evoluciones">
+          <div class="evo-titulo">Evoluciones</div>
+          <div class="evo-lista">
+            @for (e of pokemon.evoluciones; track e.id) {
+              <div class="evo" [routerLink]="['/detalle', e.id]">
+                <img
+                  [src]="'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + e.id + '.png'"
+                  [alt]="e.nombre"
+                />
+                <span class="evo-nombre">{{ e.nombre }}</span>
+                <span class="evo-num">N.º {{ ('0000' + e.id).slice(-4) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="movs">
+        <div class="evo-titulo">Movimientos ({{ pokemon.totalMovimientos }} en total, se muestran 10)</div>
+        <div class="tipos">
+          @for (m of pokemon.movimientos; track m) {
+            <span class="mov">{{ m }}</span>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</ion-content>
+
+<style>
+  ion-content {
+    --background: #e9e9e9;
+  }
+  .pagina {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border: 2px solid #d4d4d4;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  }
+  .titulo {
+    margin: 0 0 12px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: #313131;
+  }
+  .nombre { text-transform: capitalize; }
+  .num { margin-left: 8px; color: #919191; font-weight: 400; }
+  .descripcion {
+    text-align: center;
+    color: #313131;
+    font-size: 15px;
+    max-width: 650px;
+    margin: 0 auto 20px;
+  }
+  .cuerpo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .foto { background: #f2f2f2; border-radius: 10px; padding: 12px; }
+  .foto img { width: 100%; max-height: 300px; object-fit: contain; }
+  .sprites { display: flex; gap: 10px; margin-top: 12px; }
+  .sprite {
+    flex: 1;
+    background: #f2f2f2;
+    border-radius: 10px;
+    text-align: center;
+    padding: 6px;
+    font-size: 12px;
+    color: #313131;
+    font-weight: 700;
+  }
+  .sprite img { width: 80px; height: 80px; image-rendering: pixelated; display: block; margin: 0 auto; }
+  .stats { margin-top: 14px; background: #919191; border-radius: 10px; padding: 12px; color: #ffffff; }
+  .stats-titulo { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .barras { display: flex; justify-content: space-between; gap: 6px; }
+  .barra-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
+  .barra-valor { font-size: 12px; font-weight: 700; }
+  .barra-fondo {
+    position: relative;
+    width: 100%;
+    height: 110px;
+    margin: 4px 0;
+    background: #ffffff;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .barra-relleno { position: absolute; bottom: 0; width: 100%; background: #30a7d7; }
+  .barra-nombre { font-size: 10px; text-align: center; line-height: 1.1; }
+  .caja-azul {
+    background: #30a7d7;
+    border-radius: 10px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    color: #ffffff;
+  }
+  .etiqueta { display: block; font-size: 13px; font-weight: 700; }
+  .valor { display: block; font-size: 15px; }
+  .hab { text-transform: capitalize; }
+  .subtitulo { margin: 20px 0 8px; color: #313131; font-size: 16px; }
+  .tipos { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tipo {
+    padding: 6px 18px;
+    border-radius: 4px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: capitalize;
+    background: #919191;
+  }
+  .evoluciones {
+    margin-top: 24px;
+    background: #616161;
+    border-radius: 10px;
+    padding: 16px;
+    color: #ffffff;
+  }
+  .evo-titulo { font-weight: 700; font-size: 16px; margin-bottom: 10px; }
+  .evo-lista { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; }
+  .evo { text-align: center; cursor: pointer; }
+  .evo img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    background: #ffffff;
+    border-radius: 50%;
+    border: 3px solid #ffffff;
+  }
+  .evo-nombre { display: block; text-transform: capitalize; font-weight: 700; margin-top: 4px; }
+  .evo-num { font-size: 12px; opacity: 0.8; }
+  .movs {
+    margin-top: 24px;
+    background: #f2f2f2;
+    border-radius: 10px;
+    padding: 16px;
+    color: #313131;
+  }
+  .mov {
+    background: #ffffff;
+    border: 2px solid #d4d4d4;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 13px;
+    text-transform: capitalize;
+  }
+  .tipo-fire { background: #fd7d24; }
+  .tipo-water { background: #4592c4; }
+  .tipo-grass { background: #9bcc50; }
+  .tipo-electric { background: #eed535; color: #333; }
+  .tipo-poison { background: #b97fc9; }
+  .tipo-flying { background: #3dc7ef; }
+  .tipo-bug { background: #729f3f; }
+  .tipo-normal { background: #a4acaf; }
+  .tipo-ground { background: #ab9842; }
+  .tipo-rock { background: #a38c21; }
+  .tipo-psychic { background: #f366b9; }
+  .tipo-fighting { background: #d56723; }
+  .tipo-ghost { background: #7b62a3; }
+  .tipo-ice { background: #51c4e7; }
+  .tipo-dragon { background: #f16e57; }
+  .tipo-fairy { background: #fdb9e9; color: #333; }
+  .tipo-steel { background: #9eb7b8; }
+  .tipo-dark { background: #707070; }
+  @media (max-width: 700px) {
+    .cuerpo { grid-template-columns: 1fr; }
+    .pagina { margin: 8px; padding: 12px; }
+  }
+</style>

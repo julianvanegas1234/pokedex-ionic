@@ -1,20 +1,196 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-title>Pokédex</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="pagina">
+    <div class="buscador">
+      <input
+        type="text"
+        placeholder="Buscar por nombre o número"
+        [value]="busqueda"
+        (input)="buscar($any($event.target).value)"
+      />
+      @if (busqueda) {
+        <button class="limpiar" (click)="buscar('')">✕</button>
+      }
+    </div>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    @if (localesFiltrados.length) {
+      <h2 class="titulo">Mis Pokémon</h2>
+      <div class="grid">
+        @for (l of localesFiltrados; track l.id) {
+          <div class="card">
+            <span class="num">Mío</span>
+            <div class="img-box">
+              <img [src]="l.imagen" [alt]="l.nombre" />
+            </div>
+            <div class="nombre">{{ l.nombre }}</div>
+            <div class="botones">
+              <button class="btn editar" (click)="editar(l.id)">Editar</button>
+              <button class="btn borrar" (click)="eliminar(l)">Eliminar</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <h2 class="titulo">Pokédex (151 originales)</h2>
+    <div class="grid">
+      @for (p of pokemonesFiltrados; track p.id) {
+        <div class="card">
+          <span class="num">#{{ ('000' + p.id).slice(-3) }}@if (p.editado) { · editado }</span>
+          <div class="img-box" [routerLink]="['/detalle', p.id]">
+            <img [src]="p.imagen" [alt]="p.nombre" loading="lazy" />
+          </div>
+          <div class="nombre" [routerLink]="['/detalle', p.id]">{{ p.nombre }}</div>
+          <div class="botones">
+            <button class="btn editar" (click)="editar(p.id)">Editar</button>
+            @if (p.editado) {
+              <button class="btn restaurar" (click)="restaurar(p.id)">Restaurar</button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (!pokemonesFiltrados.length && !localesFiltrados.length) {
+      <p class="vacio">No se encontró ningún Pokémon con "{{ busqueda }}"</p>
+    }
   </div>
+
+  <ion-fab class="fab-camara" slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="dark" (click)="irAr()">📷</ion-fab-button>
+  </ion-fab>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="danger" (click)="nuevo()">+</ion-fab-button>
+  </ion-fab>
 </ion-content>
+
+<style>
+  ion-content {
+    --background: #e9e9e9;
+  }
+  .fab-camara {
+    margin-bottom: 72px;
+  }
+  .pagina {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 8px 20px 24px;
+    background: #f7f7f7;
+    border: 2px solid #d4d4d4;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  }
+  .buscador {
+    position: relative;
+    margin: 16px 0 4px;
+  }
+  .buscador input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 40px 12px 14px;
+    font-size: 16px;
+    color: #313131;
+    background: #ffffff;
+    border: 2px solid #d4d4d4;
+    border-radius: 10px;
+    outline: none;
+  }
+  .buscador input:focus {
+    border-color: #f34f5d;
+  }
+  .limpiar {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #919191;
+    cursor: pointer;
+  }
+  .vacio {
+    text-align: center;
+    color: #919191;
+    padding: 24px;
+  }
+  .titulo {
+    margin: 16px 4px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #313131;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+    padding: 12px 0;
+  }
+  .card {
+    background: #ffffff;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: #f34f5d;
+  }
+  .num {
+    display: block;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #919191;
+  }
+  .img-box {
+    background: #f2f2f2;
+    border-radius: 10px;
+    margin: 6px 0;
+    padding: 8px;
+    cursor: pointer;
+  }
+  .img-box img {
+    width: 100%;
+    height: 120px;
+    object-fit: contain;
+  }
+  .nombre {
+    font-size: 16px;
+    font-weight: 700;
+    color: #313131;
+    text-transform: capitalize;
+    cursor: pointer;
+  }
+  .botones {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+  .btn {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .editar { background: #30a7d7; }
+  .borrar { background: #f34f5d; }
+  .restaurar { background: #919191; }
+  @media (max-width: 600px) {
+    .pagina {
+      margin: 8px;
+      padding: 4px 10px 16px;
+    }
+  }
+</style>

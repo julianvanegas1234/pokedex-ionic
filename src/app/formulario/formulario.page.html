@@ -1,0 +1,157 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ editando ? 'Editar Pokémon' : 'Registrar Pokémon' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="pagina">
+    <div class="hero">
+      <span class="num">#{{ ('000' + p.id).slice(-3) }}</span>
+      <img
+        [src]="p.imagen || 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'"
+        alt="Vista previa"
+      />
+      <div class="hero-nombre">{{ p.nombre || 'Nuevo Pokémon' }}</div>
+    </div>
+
+    <div class="form">
+      <label class="campo">
+        <span>Nombre *</span>
+        <input [(ngModel)]="p.nombre" name="nombre" placeholder="Ej: Pikachu" />
+      </label>
+
+      <div class="fila">
+        <label class="campo">
+          <span>Altura (m)</span>
+          <input type="number" [(ngModel)]="p.altura" name="altura" />
+        </label>
+        <label class="campo">
+          <span>Peso (kg)</span>
+          <input type="number" [(ngModel)]="p.peso" name="peso" />
+        </label>
+      </div>
+
+      <label class="campo">
+        <span>Tipos (separados por coma)</span>
+        <input [(ngModel)]="p.tipos" name="tipos" placeholder="Ej: electric, fire" />
+      </label>
+
+      <label class="campo">
+        <span>URL de la imagen (opcional)</span>
+        <input [(ngModel)]="p.imagen" name="imagen" placeholder="https://..." />
+      </label>
+
+      @if (error) {
+        <p class="error">{{ error }}</p>
+      }
+
+      <button class="guardar" (click)="guardar()">
+        {{ editando ? 'Guardar cambios' : 'Registrar' }}
+      </button>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  ion-content {
+    --background: #e9e9e9;
+  }
+  .pagina {
+    max-width: 520px;
+    margin: 20px auto;
+    background: #ffffff;
+    border: 2px solid #d4d4d4;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+  }
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, #f34f5d, #ff8a65);
+    padding: 20px;
+    text-align: center;
+  }
+  .hero .num {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    font-size: 20px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .hero img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.3));
+  }
+  .hero-nombre {
+    margin-top: 8px;
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    text-transform: capitalize;
+  }
+  .form {
+    padding: 20px;
+  }
+  .fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .campo {
+    display: block;
+    margin-bottom: 14px;
+  }
+  .campo span {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #313131;
+  }
+  .campo input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    font-size: 15px;
+    color: #313131;
+    background: #f2f2f2;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    outline: none;
+  }
+  .campo input:focus {
+    border-color: #f34f5d;
+    background: #ffffff;
+  }
+  .error {
+    color: #f34f5d;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+  .guardar {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    background: #f34f5d;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .guardar:hover {
+    background: #e03d4b;
+  }
+  @media (max-width: 600px) {
+    .pagina {
+      margin: 8px;
+    }
+  }
+</style>
